@@ -23,44 +23,47 @@ public class UsuarioController {
     @GetMapping("/todos")
     public ModelAndView home(ModelMap model) {
         model.addAttribute("usuarios", dao.getTodos());
-        return new ModelAndView("/user/list", model);
+        model.addAttribute("conteudo", "/user/list");
+        return new ModelAndView("layout", model);
     }
 
     @GetMapping("/nome")
     public ModelAndView listarPorNome(@RequestParam(value = "nome") String nome, ModelMap model) {
-
+ 
         if (nome == null) {
             return new ModelAndView("redirect:/usuario/todos");
         }
-
+ 
         model.addAttribute("usuarios", dao.getByNome(nome));
-        return new ModelAndView("/user/list", model);
+        model.addAttribute("conteudo", "/user/list");
+        return new ModelAndView("layout", model);
     }
 
     @GetMapping("/sexo")
     public ModelAndView listarPorSexo(@RequestParam(value = "tipoSexo") TipoSexo sexo, ModelMap model) {
-
+ 
         if (sexo == null) {
             return new ModelAndView("redirect:/usuario/todos");
         }
-
+ 
         model.addAttribute("usuarios", dao.getBySexo(sexo));
-        return new ModelAndView("/user/list", model);
+        model.addAttribute("conteudo", "/user/list");
+        return new ModelAndView("layout", model);
     }
 
     @GetMapping("/cadastro")
     public ModelAndView cadastro(Usuario usuario) {
-
-        return new ModelAndView("/user/add");
+ 
+        return new ModelAndView("layout", "conteudo", "/user/add");
     }
 
     @PostMapping("/save")
     public ModelAndView save(@Valid Usuario usuario, BindingResult result, RedirectAttributes attrib) {
-
+ 
         if (result.hasErrors()) {
-            return new ModelAndView("/user/add");
+            return new ModelAndView("layout", "conteudo", "/user/add");
         }
-
+ 
         dao.salvar(usuario);
         attrib.addFlashAttribute("message", "Registro inserido com sucesso.");
         return new ModelAndView("redirect:/usuario/todos");
@@ -69,16 +72,17 @@ public class UsuarioController {
     @GetMapping("/update/{id}")
     public ModelAndView preUpdate(@PathVariable("id") Long id, ModelMap model) {
         model.addAttribute("usuario", dao.getId(id));
-        return new ModelAndView("/user/add", model);
+        model.addAttribute("conteudo", "/user/add");
+        return new ModelAndView("layout", model);
     }
 
     @PostMapping("/update")
     public ModelAndView update(@Valid Usuario usuario, BindingResult result, RedirectAttributes attrib) {
-
+ 
         if (result.hasErrors()) {
-            return new ModelAndView( "/user/add");
+            return new ModelAndView("layout", "conteudo", "/user/add");
         }
-
+ 
         dao.editar(usuario);
         attrib.addFlashAttribute("message", "Registro editado com sucesso.");
         return new ModelAndView("redirect:/usuario/todos");
@@ -86,7 +90,7 @@ public class UsuarioController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable("id") Long id, RedirectAttributes attrib) {
-
+ 
         dao.excluir(id);
         attrib.addFlashAttribute("message", "Usuário removido com sucesso.");
         return "redirect:/usuario/todos";
